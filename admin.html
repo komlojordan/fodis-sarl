@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin - FODIS SARL</title>
+  <link rel="stylesheet" href="assets/css/admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <header class="admin-header">
+    <div class="admin-brand" aria-label="FODIS SARL">
+      <img src="assets/logo.png" alt="FODIS SARL">
+      <span>
+        <strong>FODIS SARL</strong>
+        <small>Administration</small>
+      </span>
+    </div>
+  </header>
+
+  <main class="admin-main">
+    <section class="dashboard">
+      <h2>Tableau de bord</h2>
+      <div class="cards">
+        <div class="card"><strong id="totalProducts">0</strong><span>Produits</span></div>
+        <div class="card"><strong id="totalCategories">0</strong><span>Catégories</span></div>
+        <div class="card"><strong id="totalBrands">0</strong><span>Marques</span></div>
+        <div class="card"><strong id="outOfStock">0</strong><span>Indisponibles</span></div>
+      </div>
+    </section>
+
+    <section class="small-panels">
+      <div class="panel">
+        <h3>Catégories</h3>
+        <div class="panel-controls">
+          <input id="newCategory" placeholder="Nouvelle catégorie"><button id="addCategory">Ajouter</button>
+        </div>
+        <ul id="categoriesList"></ul>
+      </div>
+
+      <div class="panel">
+        <h3>Marques</h3>
+        <div class="panel-controls">
+          <input id="newBrand" placeholder="Nouvelle marque"><button id="addBrand">Ajouter</button>
+        </div>
+        <ul id="brandsList"></ul>
+      </div>
+
+      <div class="panel">
+        <h3>Informations du site</h3>
+        <div class="panel-controls site-info">
+          <label>Nom<input id="si_name"></label>
+          <label>Tagline<input id="si_tagline"></label>
+          <label>Tel<input id="si_phone"></label>
+          <label>WhatsApp<input id="si_whatsapp"></label>
+          <label>Email<input id="si_email"></label>
+          <label>Adresse<input id="si_address"></label>
+          <label>Horaires<input id="si_hours"></label>
+          <div class="site-actions"><button id="saveSiteInfo">Enregistrer</button><button id="exportSiteInfo">Exporter</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="manager">
+      <h2>Gestion des produits</h2>
+      <div class="controls">
+        <input id="productSearch" placeholder="Rechercher un produit">
+        <select id="filterCategory"><option value="">Toutes catégories</option></select>
+        <select id="filterBrand"><option value="">Toutes marques</option></select>
+        <select id="sortSelect">
+          <option value="">Trier</option>
+          <option value="name">Nom</option>
+          <option value="price">Prix</option>
+          <option value="category">Catégorie</option>
+        </select>
+        <button id="addProductBtn" type="button"><i class="fa-solid fa-plus"></i> Ajouter</button>
+        <button id="exportProducts" type="button" class="secondary"><i class="fa-solid fa-file-csv"></i> Exporter</button>
+      </div>
+
+      <div class="table-wrap">
+        <table id="productsTable">
+          <thead><tr><th>Image</th><th>Nom</th><th>Catégorie</th><th>Marque</th><th>Prix</th><th>Disponibilité</th><th>Actions</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p id="productsEmpty" class="empty-state">Aucun produit trouvé.</p>
+    </section>
+  </main>
+
+  <dialog id="productDialog" class="product-dialog">
+    <form id="productForm" method="dialog">
+      <div class="dialog-header">
+        <h2 id="productDialogTitle">Produit</h2>
+        <button type="button" class="icon-button secondary" id="closeProductDialog" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="form-grid">
+        <label>Nom<input id="pf_name" name="name" required></label>
+        <label>Catégorie<input id="pf_category" name="category" list="categoryOptions" required></label>
+        <label>Marque<input id="pf_brand" name="brand" list="brandOptions"></label>
+        <label>Prix<input id="pf_price" name="price" type="number" min="0" step="1"></label>
+        <label>Prix promo<input id="pf_currentPrice" name="currentPrice" type="number" min="0" step="1"></label>
+        <label>Devise<input id="pf_currency" name="currency" value="FCFA"></label>
+        <label>Unité<input id="pf_unit" name="unit"></label>
+        <label>Poids<input id="pf_weight" name="weight"></label>
+        <label>Dimensions<input id="pf_dimensions" name="dimensions"></label>
+        <label>Couleur<input id="pf_color" name="color"></label>
+        <label>Disponibilité<input id="pf_availability" name="availability" value="Disponible"></label>
+        <div class="image-field full">
+          <div class="image-field-header">
+            <strong>Images</strong>
+            <button type="button" id="chooseImagesBtn" class="secondary"><i class="fa-solid fa-images"></i> Choisir</button>
+          </div>
+          <div id="selectedImages" class="selected-images"></div>
+        </div>
+        <label class="full">Description<textarea id="pf_description" name="description" rows="4"></textarea></label>
+      </div>
+
+      <datalist id="categoryOptions"></datalist>
+      <datalist id="brandOptions"></datalist>
+
+      <div class="dialog-actions">
+        <button type="button" class="secondary" id="cancelProduct">Annuler</button>
+        <button type="submit">Enregistrer</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="imageDialog" class="image-dialog">
+    <div class="dialog-header">
+      <h2>Choisir des images</h2>
+      <button type="button" class="icon-button secondary" id="closeImageDialog" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="asset-toolbar">
+      <label class="upload-button">
+        <i class="fa-solid fa-upload"></i>
+        Téléverser
+        <input type="file" id="uploadImage" accept="image/*" multiple>
+      </label>
+    </div>
+    <div id="assetGrid" class="asset-grid"></div>
+    <div class="dialog-actions">
+      <button type="button" class="secondary" id="cancelImages">Annuler</button>
+      <button type="button" id="applyImages">Valider</button>
+    </div>
+  </dialog>
+
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>

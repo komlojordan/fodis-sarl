@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="420" viewBox="0 0 1920 420">
+    <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#dcebf0"/>
+            <stop offset="100%" stop-color="#f8fbfc"/>
+        </linearGradient>
+        <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#f2f4f1"/>
+            <stop offset="100%" stop-color="#cfd8d4"/>
+        </linearGradient>
+        <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#d9f0f7"/>
+            <stop offset="52%" stop-color="#7fa9b5"/>
+            <stop offset="100%" stop-color="#244650"/>
+        </linearGradient>
+        <linearGradient id="sign" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#06351f"/>
+            <stop offset="58%" stop-color="#007a3d"/>
+            <stop offset="100%" stop-color="#0b5f34"/>
+        </linearGradient>
+    </defs>
+
+    <rect width="1920" height="420" fill="url(#sky)"/>
+    <rect y="74" width="1920" height="346" fill="url(#wall)"/>
+    <rect y="66" width="1920" height="24" fill="#26343a"/>
+    <rect y="90" width="1920" height="10" fill="#ffc400"/>
+
+    <g>
+        <path d="M150 102 L1770 102 L1838 148 L82 148 Z" fill="#000000" opacity="0.18"/>
+        <path d="M150 92 L1770 92 L1838 138 L82 138 Z" fill="#38454b"/>
+        <path d="M118 128 L1802 128 L1748 164 L172 164 Z" fill="#222c31"/>
+        <rect x="244" y="116" width="1432" height="118" rx="10" fill="url(#sign)"/>
+        <rect x="274" y="145" width="1372" height="6" fill="#ffc400" opacity="0.95"/>
+    </g>
+
+    <text x="960" y="193" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="76" font-weight="800" text-anchor="middle">
+        FODIS SARL
+    </text>
+    <text x="960" y="226" fill="#ffd84f" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" text-anchor="middle">
+        QUINCAILLERIE - ELECTRICITE - PLOMBERIE
+    </text>
+
+    <g opacity="0.98">
+        <rect x="170" y="244" width="410" height="176" fill="#24353b"/>
+        <rect x="196" y="264" width="358" height="156" fill="url(#glass)"/>
+        <path d="M200 272 L554 272 L554 300 L200 366 Z" fill="#ffffff" opacity="0.22"/>
+
+        <rect x="620" y="244" width="680" height="176" fill="#2b3f46"/>
+        <rect x="648" y="266" width="186" height="154" fill="url(#glass)"/>
+        <rect x="866" y="266" width="186" height="154" fill="url(#glass)"/>
+        <rect x="1084" y="266" width="186" height="154" fill="url(#glass)"/>
+        <path d="M650 276 L1270 276 L1270 310 L650 392 Z" fill="#ffffff" opacity="0.18"/>
+
+        <rect x="1340" y="244" width="410" height="176" fill="#24353b"/>
+        <rect x="1366" y="264" width="358" height="156" fill="url(#glass)"/>
+        <path d="M1370 272 L1724 272 L1724 298 L1370 366 Z" fill="#ffffff" opacity="0.22"/>
+    </g>
+
+    <g opacity="0.86">
+        <rect x="714" y="334" width="80" height="86" fill="#c87c35"/>
+        <rect x="823" y="318" width="102" height="102" fill="#b94b39"/>
+        <rect x="964" y="342" width="76" height="78" fill="#e0b047"/>
+        <rect x="1080" y="312" width="116" height="108" fill="#607d3c"/>
+        <rect x="1110" y="332" width="54" height="88" fill="#f0d889"/>
+    </g>
+
+    <rect y="390" width="1920" height="30" fill="#5e6a62"/>
+    <rect y="408" width="1920" height="12" fill="#303933"/>
+    <rect width="1920" height="420" fill="#0b1518" opacity="0.07"/>
+</svg>
