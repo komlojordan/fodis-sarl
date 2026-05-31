@@ -302,7 +302,8 @@
         }
 
         .catalog-section{
-            background:white;
+            background:
+                linear-gradient(180deg, #f7faf8 0%, #ffffff 220px);
             padding:46px 60px 52px;
         }
 
@@ -314,18 +315,62 @@
             margin-bottom:22px;
         }
 
+        .catalog-hero-panel{
+            position:relative;
+            overflow:hidden;
+            align-items:stretch;
+            margin-bottom:30px;
+            padding:24px;
+            border:1px solid #e4ebe7;
+            border-radius:8px;
+            background:
+                linear-gradient(135deg, rgba(0,122,61,.1) 0%, rgba(255,196,0,.16) 100%),
+                #ffffff;
+            box-shadow:0 16px 38px rgba(17,24,32,.08);
+        }
+
+        .catalog-hero-panel::before{
+            content:"";
+            position:absolute;
+            top:0;
+            left:0;
+            width:6px;
+            height:100%;
+            background:linear-gradient(180deg, var(--green), var(--yellow));
+        }
+
+        .catalog-title{
+            position:relative;
+            z-index:1;
+        }
+
         .catalog-title span{
-            display:block;
-            margin-bottom:6px;
+            display:inline-flex;
+            align-items:center;
+            gap:7px;
+            min-height:26px;
+            margin-bottom:9px;
+            padding:0 10px;
+            border-radius:999px;
+            background:#e9f6ee;
             color:var(--green);
             font-size:13px;
             font-weight:bold;
             text-transform:uppercase;
         }
 
+        .catalog-title span::before{
+            content:"";
+            width:7px;
+            height:7px;
+            border-radius:50%;
+            background:var(--yellow);
+        }
+
         .catalog-title h2{
             color:var(--dark);
-            font-size:30px;
+            font-size:34px;
+            line-height:1.08;
             margin-bottom:8px;
         }
 
@@ -336,16 +381,72 @@
         }
 
         .product-count{
-            color:var(--dark);
-            font-size:14px;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            min-height:42px;
+            padding:0 14px;
+            border:1px solid rgba(0,122,61,.18);
+            border-radius:999px;
+            background:white;
+            color:var(--green);
+            font-size:13px;
             font-weight:bold;
             white-space:nowrap;
+            box-shadow:0 10px 22px rgba(17,24,32,.07);
+        }
+
+        .catalog-highlights{
+            display:grid;
+            grid-template-columns:repeat(3, minmax(0, 1fr));
+            gap:12px;
+            margin-top:20px;
+        }
+
+        .catalog-highlight{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            min-height:58px;
+            padding:12px;
+            border:1px solid rgba(0,122,61,.12);
+            border-radius:8px;
+            background:rgba(255,255,255,.78);
+        }
+
+        .catalog-highlight i{
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            width:34px;
+            height:34px;
+            border-radius:8px;
+            background:#fff4bd;
+            color:var(--green);
+            flex-shrink:0;
+        }
+
+        .catalog-highlight strong,
+        .catalog-highlight small{
+            display:block;
+        }
+
+        .catalog-highlight strong{
+            color:var(--dark);
+            font-size:14px;
+        }
+
+        .catalog-highlight small{
+            margin-top:2px;
+            color:#66717b;
+            font-size:12px;
+            font-weight:bold;
         }
 
         .home-groups{
             display:grid;
-            gap:30px;
-            margin-bottom:34px;
+            gap:24px;
+            margin-bottom:36px;
         }
 
         .home-groups.is-filtered{
@@ -354,7 +455,12 @@
 
         .home-product-section{
             display:grid;
-            gap:14px;
+            gap:16px;
+            padding:22px;
+            border:1px solid #e6ebef;
+            border-radius:8px;
+            background:white;
+            box-shadow:0 12px 30px rgba(17,24,32,.06);
         }
 
         .home-section-header{
@@ -362,6 +468,8 @@
             align-items:flex-end;
             justify-content:space-between;
             gap:18px;
+            padding-bottom:14px;
+            border-bottom:1px solid #eef2f4;
         }
 
         .home-section-title span{
@@ -375,20 +483,38 @@
 
         .home-section-title h3{
             color:var(--dark);
-            font-size:24px;
+            font-size:25px;
             line-height:1.2;
         }
 
+        .home-section-title p{
+            margin-top:5px;
+            color:#66717b;
+            font-size:14px;
+            line-height:1.4;
+        }
+
         .home-section-link{
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            min-height:34px;
+            padding:0 12px;
+            border:1px solid rgba(0,122,61,.18);
+            border-radius:999px;
+            background:#f7fbf8;
             color:var(--green);
             font-size:14px;
             font-weight:bold;
             text-decoration:none;
             white-space:nowrap;
+            transition:.3s;
         }
 
         .home-section-link:hover{
-            color:var(--dark);
+            border-color:var(--green);
+            background:var(--green);
+            color:white;
         }
 
         .home-mini-grid{
@@ -409,17 +535,19 @@
             gap:12px;
             min-height:86px;
             padding:16px;
-            border:1px solid #e3e7eb;
+            border:1px solid #e6ebef;
             border-radius:8px;
-            background:#fbfcfc;
+            background:linear-gradient(180deg, #ffffff 0%, #fbfcfc 100%);
             color:var(--dark);
             text-decoration:none;
+            box-shadow:0 8px 18px rgba(17,24,32,.05);
             transition:.3s;
         }
 
         .collection-card:hover{
             border-color:var(--green);
             transform:translateY(-2px);
+            box-shadow:0 14px 28px rgba(17,24,32,.09);
         }
 
         .collection-card i{
@@ -446,14 +574,18 @@
             flex-wrap:wrap;
             gap:10px;
             margin-bottom:24px;
+            padding:12px;
+            border:1px solid #e6ebef;
+            border-radius:8px;
+            background:#fbfcfc;
         }
 
         .category-chips button{
-            min-height:34px;
+            min-height:36px;
             border:1px solid #d9dee3;
-            border-radius:4px;
-            padding:0 14px;
-            background:#f7f8f9;
+            border-radius:999px;
+            padding:0 15px;
+            background:white;
             color:#263238;
             font-weight:bold;
             cursor:pointer;
@@ -477,11 +609,12 @@
             display:flex;
             flex-direction:column;
             min-height:auto;
-            border:1px solid #e3e7eb;
+            position:relative;
+            border:1px solid #e6ebef;
             border-radius:8px;
             overflow:hidden;
-            background:white;
-            box-shadow:0 8px 20px rgba(17,24,32,.06);
+            background:linear-gradient(180deg, #ffffff 0%, #fbfcfd 100%);
+            box-shadow:0 10px 24px rgba(17,24,32,.07);
             transition:.3s;
             cursor:pointer;
         }
@@ -623,7 +756,8 @@
 
         .product-card:hover{
             transform:translateY(-3px);
-            box-shadow:0 14px 30px rgba(17,24,32,.1);
+            border-color:rgba(0,122,61,.28);
+            box-shadow:0 16px 34px rgba(17,24,32,.12);
         }
 
         .product-image{
@@ -631,8 +765,8 @@
             display:flex;
             align-items:center;
             justify-content:center;
-            height:178px;
-            background:#f7f8f9;
+            height:166px;
+            background:linear-gradient(135deg, #f8faf9 0%, #eef4f0 100%);
             border-bottom:1px solid #edf0f2;
         }
 
@@ -651,10 +785,11 @@
             min-height:26px;
             padding:0 9px;
             border-radius:4px;
-            background:var(--yellow);
+            background:#ffd33d;
             color:var(--dark);
             font-size:12px;
             font-weight:bold;
+            box-shadow:0 8px 16px rgba(17,24,32,.12);
         }
 
         .product-icon{
@@ -682,28 +817,52 @@
             display:flex;
             flex:1;
             flex-direction:column;
-            padding:16px;
+            padding:14px;
         }
 
         .product-meta{
             display:flex;
             justify-content:space-between;
-            align-items:center;
+            align-items:flex-start;
             gap:10px;
             margin-bottom:10px;
-            color:#66717b;
-            font-size:12px;
+        }
+
+        .product-categories{
+            display:flex;
+            flex-wrap:wrap;
+            gap:5px;
+        }
+
+        .product-category-chip{
+            display:inline-flex;
+            align-items:center;
+            min-height:22px;
+            padding:0 7px;
+            border-radius:4px;
+            background:#edf7f1;
+            color:var(--green);
+            font-size:11px;
             font-weight:bold;
         }
 
         .availability{
+            display:inline-flex;
+            align-items:center;
+            min-height:22px;
+            padding:0 7px;
+            border-radius:999px;
+            background:#f7fbf8;
             color:var(--green);
+            font-size:11px;
+            font-weight:bold;
             white-space:nowrap;
         }
 
         .product-card h3{
             color:var(--dark);
-            font-size:18px;
+            font-size:17px;
+            line-height:1.25;
             margin-bottom:5px;
         }
 
@@ -711,7 +870,21 @@
             color:var(--green);
             font-size:13px;
             font-weight:bold;
-            margin-bottom:9px;
+            margin-bottom:8px;
+        }
+
+        .product-local-note{
+            display:flex;
+            align-items:center;
+            gap:6px;
+            margin-bottom:12px;
+            color:#5c6872;
+            font-size:12px;
+            font-weight:bold;
+        }
+
+        .product-local-note i{
+            color:var(--yellow);
         }
 
         .product-card p{
@@ -748,6 +921,9 @@
             align-items:center;
             justify-content:space-between;
             gap:12px;
+            margin-top:auto;
+            padding-top:12px;
+            border-top:1px solid #edf0f2;
         }
 
         .product-price{
@@ -1449,6 +1625,10 @@
                 align-items:flex-start;
             }
 
+            .catalog-highlights{
+                grid-template-columns:1fr;
+            }
+
             .home-section-header{
                 flex-direction:column;
                 align-items:flex-start;
@@ -1524,6 +1704,22 @@
 
             .catalog-section{
                 padding:26px 14px 34px;
+            }
+
+            .catalog-hero-panel{
+                padding:18px 16px;
+            }
+
+            .catalog-title h2{
+                font-size:28px;
+            }
+
+            .catalog-highlight{
+                min-height:52px;
+            }
+
+            .home-product-section{
+                padding:16px 12px;
             }
 
             .products-grid,
@@ -1731,7 +1927,7 @@
 
     <section class="catalog-section page-panel" id="produits" data-page="home">
 
-        <div class="catalog-header">
+        <div class="catalog-header catalog-hero-panel">
 
             <div class="catalog-title">
                 <span>Accueil</span>
@@ -1740,6 +1936,30 @@
                     Retrouvez les promotions, les arrivages et les principales
                     familles de produits FODIS SARL.
                 </p>
+
+                <div class="catalog-highlights">
+                    <div class="catalog-highlight">
+                        <i class="fa-solid fa-truck-fast"></i>
+                        <div>
+                            <strong>Livraison Douala</strong>
+                            <small>Chantiers et boutiques</small>
+                        </div>
+                    </div>
+                    <div class="catalog-highlight">
+                        <i class="fa-solid fa-clipboard-check"></i>
+                        <div>
+                            <strong>Devis rapide</strong>
+                            <small>Commande sur WhatsApp</small>
+                        </div>
+                    </div>
+                    <div class="catalog-highlight">
+                        <i class="fa-solid fa-screwdriver-wrench"></i>
+                        <div>
+                            <strong>Stock utile</strong>
+                            <small>Maison et chantier</small>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="product-count" id="productCount">Chargement du catalogue...</div>
@@ -2304,6 +2524,48 @@
 
     }
 
+    function getProductCategories(product){
+
+        if(Array.isArray(product.category)){
+
+            return product.category.filter(Boolean);
+
+        }
+
+        if(Array.isArray(product.categories)){
+
+            return product.categories.filter(Boolean);
+
+        }
+
+        return product.category ? [product.category] : ["Autre"];
+
+    }
+
+    function getPrimaryCategory(product){
+
+        return getProductCategories(product)[0] || "Autre";
+
+    }
+
+    function formatCategories(product){
+
+        return getProductCategories(product).join(", ");
+
+    }
+
+    function productHasCategory(product, category){
+
+        const normalizedCategory = normalizeText(category);
+
+        return getProductCategories(product).some(function(productCategory){
+
+            return normalizeText(productCategory) === normalizedCategory;
+
+        });
+
+    }
+
     function getCategoryIcon(category){
 
         return categoryIconMap[normalizeText(category)] || "assets/product-placeholder.svg";
@@ -2313,9 +2575,11 @@
     function normalizeProduct(product){
 
         const normalized = Object.assign({}, product);
+        normalized.category = getProductCategories(normalized);
         normalized.images = getProductImages(normalized);
         delete normalized.image;
-        normalized.icon = getCategoryIcon(normalized.category);
+        delete normalized.categories;
+        normalized.icon = getCategoryIcon(getPrimaryCategory(normalized));
         return normalized;
 
     }
@@ -2360,7 +2624,7 @@
         return "Bonjour FODIS SARL, je souhaite commander ce produit :\n\n" +
         "Produit : " + product.name + "\n" +
         "Marque : " + product.brand + "\n" +
-        "Categorie : " + product.category + "\n" +
+        "Categories : " + formatCategories(product) + "\n" +
         "Prix actuel : " + formatPrice(product) + " / " + product.unit + "\n" +
         promoLine +
         "Poids : " + product.weight + "\n" +
@@ -2373,9 +2637,27 @@
 
     }
 
+    function renderCategoryTags(product, limit){
+
+        const categories = getProductCategories(product);
+        const visibleCategories = categories.slice(0, limit);
+        const extraCount = categories.length - visibleCategories.length;
+        const extraTag = extraCount > 0 ?
+        `<span class="product-category-chip">+${extraCount}</span>` :
+        "";
+
+        return visibleCategories.map(function(category){
+
+            return `<span class="product-category-chip">${escapeHtml(category)}</span>`;
+
+        }).join("") + extraTag;
+
+    }
+
     function createProductCard(product){
 
         const imagePath = getPrimaryProductImage(product);
+        const primaryCategory = getPrimaryCategory(product);
         const promoBadge = hasCurrentPrice(product) ?
         `<span class="product-badge">Promo</span>` :
         "";
@@ -2386,18 +2668,24 @@
                     <img src="${escapeHtml(imagePath)}" alt="${escapeHtml(product.name)}">
                     ${promoBadge}
                     <div class="product-icon">
-                        <img src="${escapeHtml(getCategoryIcon(product.category))}" alt="">
+                        <img src="${escapeHtml(getCategoryIcon(primaryCategory))}" alt="">
                     </div>
                 </div>
 
                 <div class="product-card-body">
                     <div class="product-meta">
-                        <span>${escapeHtml(product.category)}</span>
+                        <div class="product-categories">
+                            ${renderCategoryTags(product, 2)}
+                        </div>
                         <span class="availability">${escapeHtml(product.availability)}</span>
                     </div>
 
                     <h3>${escapeHtml(product.name)}</h3>
                     <div class="product-brand">${escapeHtml(product.brand)}</div>
+                    <div class="product-local-note">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <span>Livraison Douala</span>
+                    </div>
 
                     <div class="product-bottom">
                         <div class="product-price">
@@ -2430,9 +2718,15 @@
 
         }
 
+        const sectionDescriptions = {
+            "Bonnes affaires":"Des prix attractifs pour avancer vite sur les achats essentiels.",
+            "Nouveautés":"Les derniers articles ajoutés au catalogue FODIS SARL.",
+            "Demandés souvent":"Des références pratiques pour les besoins courants à Douala."
+        };
         const actionLink = category ?
         `<a href="#produits" class="home-section-link" data-category-link="${escapeHtml(category)}">Voir tout</a>` :
         `<a href="#produits" class="home-section-link" data-category-link="Tous">Voir tout</a>`;
+        const sectionDescription = sectionDescriptions[kicker] || "";
 
         return `
             <section class="home-product-section">
@@ -2440,6 +2734,7 @@
                     <div class="home-section-title">
                         <span>${escapeHtml(kicker)}</span>
                         <h3>${escapeHtml(title)}</h3>
+                        ${sectionDescription ? `<p>${escapeHtml(sectionDescription)}</p>` : ""}
                     </div>
                     ${actionLink}
                 </div>
@@ -2458,8 +2753,15 @@
 
         products.forEach(function(product){
 
-            const value = product[field] || "Autre";
-            counts[value] = (counts[value] || 0) + 1;
+            const rawValue = product[field] || "Autre";
+            const values = Array.isArray(rawValue) ? rawValue : [rawValue];
+
+            values.forEach(function(value){
+
+                const key = value || "Autre";
+                counts[key] = (counts[key] || 0) + 1;
+
+            });
 
         });
 
@@ -2592,7 +2894,11 @@
         .filter(function(item){
 
             return item.id !== product.id &&
-            normalizeText(item.category) === normalizeText(product.category);
+            getProductCategories(item).some(function(category){
+
+                return productHasCategory(product, category);
+
+            });
 
         })
         .slice(0, 4);
@@ -2601,6 +2907,7 @@
         similarProducts.map(createProductCard).join("") :
         `<p class="empty-state show">Aucun produit similaire disponible pour le moment.</p>`;
         const productImages = getProductImages(product);
+        const primaryCategory = getPrimaryCategory(product);
         const galleryContent = productImages.length > 1 ?
         `<div class="product-detail-gallery">
             ${productImages.map(function(image){
@@ -2617,7 +2924,7 @@
                     <div class="product-detail-media">
                         <img src="${escapeHtml(getPrimaryProductImage(product))}" alt="${escapeHtml(product.name)}">
                         <div class="product-detail-category-icon">
-                            <img src="${escapeHtml(getCategoryIcon(product.category))}" alt="">
+                            <img src="${escapeHtml(getCategoryIcon(primaryCategory))}" alt="">
                         </div>
                     </div>
                     ${galleryContent}
@@ -2625,7 +2932,11 @@
 
                 <article class="product-detail-info">
                     <div class="product-detail-kicker">
-                        <span>${escapeHtml(product.category)}</span>
+                        ${getProductCategories(product).map(function(category){
+
+                            return `<span>${escapeHtml(category)}</span>`;
+
+                        }).join("")}
                         <span>${escapeHtml(product.availability)}</span>
                     </div>
 
@@ -2653,7 +2964,7 @@
                             <i class="fa-solid fa-cart-plus"></i>
                             Ajouter au panier
                         </button>
-                        <a href="#produits" class="details-button" data-category-link="${escapeHtml(product.category)}">
+                        <a href="#produits" class="details-button" data-category-link="${escapeHtml(primaryCategory)}">
                             <i class="fa-solid fa-layer-group"></i>
                             Voir la categorie
                         </a>
@@ -2663,7 +2974,7 @@
 
             <section class="related-products">
                 <h3>Produits similaires</h3>
-                <p>Autres articles de la catégorie ${escapeHtml(product.category)}.</p>
+                <p>Autres articles dans ${escapeHtml(formatCategories(product))}.</p>
                 <div class="related-grid">
                     ${relatedContent}
                 </div>
@@ -2719,7 +3030,9 @@
                         <h3>${escapeHtml(product.name)}</h3>
                         <div class="product-brand">${escapeHtml(product.brand)}</div>
                         <div class="product-meta">
-                            <span>${escapeHtml(product.category)}</span>
+                            <div class="product-categories">
+                                ${renderCategoryTags(product, 3)}
+                            </div>
                             <span>${cartSummary[productId]} unité${cartSummary[productId] > 1 ? "s" : ""}</span>
                         </div>
                         <div class="product-bottom">
@@ -2839,11 +3152,11 @@
 
         const searchValue = normalizeText(searchInput.value);
         const categoryValue = normalizeText(currentCategory);
-        const productCategory = normalizeText(product.category);
+        const productCategories = getProductCategories(product);
         const searchableText = normalizeText(
             product.name + " " +
             product.brand + " " +
-            product.category + " " +
+            productCategories.join(" ") + " " +
             product.description + " " +
             product.weight + " " +
             product.dimensions + " " +
@@ -2852,7 +3165,7 @@
         );
 
         const matchesCategory =
-        categoryValue === "tous" || productCategory === categoryValue;
+        categoryValue === "tous" || productHasCategory(product, currentCategory);
 
         const matchesSearch =
         searchValue === "" || searchableText.includes(searchValue);
@@ -2873,8 +3186,7 @@
         );
 
         productCount.textContent = visibleProducts.length + " produit" +
-        (visibleProducts.length > 1 ? "s" : "") + " affiche" +
-        (visibleProducts.length > 1 ? "s" : "");
+        (visibleProducts.length > 1 ? "s" : "") + " en vitrine";
 
         productsEmpty.classList.toggle("show", visibleProducts.length === 0);
         activateWhatsappLinks(productsGrid);
