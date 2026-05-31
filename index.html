@@ -348,6 +348,10 @@
             margin-bottom:34px;
         }
 
+        .home-groups.is-filtered{
+            display:none;
+        }
+
         .home-product-section{
             display:grid;
             gap:14px;
@@ -435,13 +439,6 @@
             display:block;
             margin-bottom:4px;
             font-size:16px;
-        }
-
-        .collection-card span{
-            display:block;
-            color:#66717b;
-            font-size:13px;
-            font-weight:bold;
         }
 
         .category-chips{
@@ -2381,8 +2378,6 @@
         "fa-solid fa-tag" :
         "fa-solid fa-layer-group";
 
-        const label = item.count + " produit" + (item.count > 1 ? "s" : "");
-
         const linkAttribute = type === "brand" ?
         `data-brand-link="${escapeHtml(item.name)}"` :
         `data-category-link="${escapeHtml(item.name)}"`;
@@ -2392,7 +2387,6 @@
                 <i class="${iconClass}"></i>
                 <div>
                     <strong>${escapeHtml(item.name)}</strong>
-                    <span>${label}</span>
                 </div>
             </a>
         `;
@@ -2765,6 +2759,11 @@
 
         productsGrid.innerHTML = visibleProducts.map(createProductCard).join("");
 
+        homeGroups.classList.toggle(
+            "is-filtered",
+            normalizeText(currentCategory) !== "tous" || normalizeText(searchInput.value) !== ""
+        );
+
         productCount.textContent = visibleProducts.length + " produit" +
         (visibleProducts.length > 1 ? "s" : "") + " affiche" +
         (visibleProducts.length > 1 ? "s" : "");
@@ -2777,10 +2776,10 @@
 
     }
 
-    function setCategory(category){
+    function setCategory(category, options){
 
         currentCategory = category || "Tous";
-        showPage("home");
+        showPage("home", options);
         updateActiveCategory();
         renderProducts();
 
@@ -2795,8 +2794,10 @@
 
                 event.preventDefault();
                 searchInput.value = "";
-                showPage("home", { updateHash:true, scrollTo:document.getElementById("produits") });
-                setCategory(link.dataset.categoryLink);
+                setCategory(link.dataset.categoryLink, {
+                    updateHash:true,
+                    scrollTo:document.getElementById("produits")
+                });
 
             });
 
@@ -2882,6 +2883,7 @@
 
         button.addEventListener("click", function(){
 
+            searchInput.value = "";
             setCategory(button.dataset.categoryFilter);
 
         });
