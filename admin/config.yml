@@ -6,7 +6,7 @@ backend:
   open_authoring: false
   squash_merges: true
 
-local_backend: true
+local_backend: false
 
 media_folder: "assets"
 public_folder: "assets"
