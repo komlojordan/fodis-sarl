@@ -3,11 +3,14 @@ import json
 import mimetypes
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import unquote
+from urllib.parse import parse_qs, unquote, urlparse
 
 
 ROOT = Path(__file__).resolve().parent
 ASSETS = ROOT / "assets"
+DATA = ROOT / "data"
+PRODUCTS_JSON = DATA / "products.json"
+SITE_INFO_JSON = DATA / "site_info.json"
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg", ".bmp", ".avif"}
 
 
@@ -49,6 +52,57 @@ def asset_images():
     return paths
 
 
+def read_json_file(path, fallback):
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return fallback
+
+
+def write_json_file(path, payload):
+    path.parent.mkdir(exist_ok=True)
+    path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+
+def normalize_categories(value):
+    if isinstance(value, list):
+        source = value
+    elif isinstance(value, str):
+        source = value.replace("|", ",").replace(";", ",").split(",")
+    else:
+        source = []
+
+    categories = []
+    for item in source:
+        clean = str(item).strip()
+        if clean and clean.lower() not in [category.lower() for category in categories]:
+            categories.append(clean)
+    return categories
+
+
+def validate_products(payload):
+    if not isinstance(payload, list):
+        raise ValueError("Le catalogue doit etre une liste de produits.")
+
+    products = []
+    for index, item in enumerate(payload, start=1):
+        if not isinstance(item, dict):
+            raise ValueError(f"Produit invalide a la ligne {index}.")
+
+        product = dict(item)
+        product["id"] = str(product.get("id") or f"produit-{index}").strip()
+        product["name"] = str(product.get("name") or "").strip()
+        product["category"] = normalize_categories(product.get("category") or product.get("categories"))
+        product.pop("categories", None)
+        if not product["name"] or not product["category"]:
+            raise ValueError(f"Nom ou categorie manquant a la ligne {index}.")
+        products.append(product)
+    return products
+
+
 class AdminHandler(SimpleHTTPRequestHandler):
     def send_json(self, status, payload):
         body = json.dumps(payload).encode("utf-8")
@@ -59,13 +113,49 @@ class AdminHandler(SimpleHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_GET(self):
-        if self.path.split("?", 1)[0] == "/assets-list":
+        parsed = urlparse(self.path)
+        query = parse_qs(parsed.query)
+
+        if parsed.path in {"/assets-list", "/admin_assets.php"} and query.get("action", ["list"])[0] == "list":
             self.send_json(200, {"images": asset_images()})
+            return
+        if parsed.path in {"/site-info", "/admin_site_info.php"}:
+            self.send_json(200, read_json_file(SITE_INFO_JSON, {}))
             return
         super().do_GET()
 
     def do_POST(self):
-        if self.path.split("?", 1)[0] != "/upload-assets":
+        parsed = urlparse(self.path)
+        query = parse_qs(parsed.query)
+        path = parsed.path
+
+        if path == "/save-products":
+            try:
+                length = int(self.headers.get("Content-Length", "0"))
+                payload = json.loads(self.rfile.read(length).decode("utf-8"))
+                products = validate_products(payload)
+                write_json_file(PRODUCTS_JSON, products)
+                self.send_json(200, {"ok": True, "products": len(products)})
+            except Exception as exc:
+                self.send_json(400, {"error": str(exc)})
+            return
+
+        if path == "/site-info":
+            try:
+                length = int(self.headers.get("Content-Length", "0"))
+                payload = json.loads(self.rfile.read(length).decode("utf-8"))
+                if not isinstance(payload, dict):
+                    raise ValueError("Les informations du site doivent etre un objet JSON.")
+                write_json_file(SITE_INFO_JSON, payload)
+                self.send_json(200, {"ok": True})
+            except Exception as exc:
+                self.send_json(400, {"error": str(exc)})
+            return
+
+        is_upload = path == "/upload-assets" or (
+            path == "/admin_assets.php" and query.get("action", [""])[0] == "upload"
+        )
+        if not is_upload:
             self.send_error(404)
             return
 

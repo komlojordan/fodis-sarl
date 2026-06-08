@@ -57,15 +57,34 @@
     }catch(e){}
   }
 
+  function fetchFirstJSON(urls, options){
+    let index = 0;
+
+    function tryNext(){
+      const url = urls[index];
+      index += 1;
+      return fetch(url, options)
+        .then(function(response){
+          if(!response.ok){
+            throw new Error('Requete indisponible.');
+          }
+          return response.json();
+        })
+        .catch(function(error){
+          if(index >= urls.length){
+            throw error;
+          }
+          return tryNext();
+        });
+    }
+
+    return tryNext();
+  }
+
   function loadAssetsFromServer(){
-    return fetch('admin_assets.php?action=list')
+    return fetchFirstJSON(['admin_assets.php?action=list', 'assets-list'])
       .then(function(response){
-        if(!response.ok){
-          throw new Error('Liste des images indisponible.');
-        }
-        return response.json();
-      })
-      .then(function(data){
+        const data = response || {};
         (data.images || []).forEach(function(src){
           if(src && !assetImages.includes(src)){
             assetImages.push(src);
@@ -97,8 +116,7 @@
         refreshProductState();
       });
 
-    fetch('admin_site_info.php')
-      .then(function(r){ return r.json(); })
+    fetchFirstJSON(['site-info', 'admin_data.php?action=site-info', 'data/site_info.json', 'admin_site_info.php'])
       .then(function(siteInfo){
         state.siteInfo = getSavedJSON(storageKeys.siteInfo, siteInfo || {});
         populateSiteInfo();
@@ -122,7 +140,7 @@
       const cleaned = Object.assign({}, product);
       cleaned.id = String(cleaned.id || createProductId(cleaned.name || ('produit-' + (index + 1))));
       cleaned.name = String(cleaned.name || '');
-      cleaned.category = String(cleaned.category || '');
+      cleaned.category = getProductCategories(cleaned);
       cleaned.brand = String(cleaned.brand || '');
       cleaned.description = String(cleaned.description || '');
       cleaned.currency = String(cleaned.currency || 'FCFA');
@@ -133,7 +151,7 @@
       cleaned.availability = String(cleaned.availability || 'Disponible');
       cleaned.images = getImageList(cleaned.images || cleaned.image);
       delete cleaned.image;
-      cleaned.icon = getCategoryIcon(cleaned.category);
+      cleaned.icon = getCategoryIcon(getPrimaryCategory(cleaned));
       cleaned.price = toNullableNumber(cleaned.price);
       cleaned.currentPrice = toNullableNumber(cleaned.currentPrice);
       return cleaned;
@@ -150,6 +168,51 @@
     return list.map(function(item){
       return String(item || '').trim();
     }).filter(Boolean);
+  }
+
+  function parseCategories(value){
+    const source = Array.isArray(value) ? value : String(value || '').split(/[;,|]/);
+    const categories = [];
+
+    source.forEach(function(item){
+      const clean = String(item || '').trim();
+      if(clean && !categories.some(function(category){
+        return normalize(category) === normalize(clean);
+      })){
+        categories.push(clean);
+      }
+    });
+
+    return categories;
+  }
+
+  function getProductCategories(product){
+    if(!product){
+      return [];
+    }
+    if(Array.isArray(product.category)){
+      return parseCategories(product.category);
+    }
+    if(Array.isArray(product.categories)){
+      return parseCategories(product.categories);
+    }
+    return parseCategories(product.category);
+  }
+
+  function getPrimaryCategory(product){
+    return getProductCategories(product)[0] || '';
+  }
+
+  function formatCategories(product){
+    const categories = getProductCategories(product);
+    return categories.length ? categories.join(', ') : '-';
+  }
+
+  function productHasCategory(product, category){
+    const selected = normalize(category);
+    return getProductCategories(product).some(function(productCategory){
+      return normalize(productCategory) === selected;
+    });
   }
 
   function toNullableNumber(value){
@@ -200,7 +263,9 @@
 
   function syncCollectionsFromProducts(){
     state.products.forEach(function(product){
-      addUnique(state.categories, product.category);
+      getProductCategories(product).forEach(function(category){
+        addUnique(state.categories, category);
+      });
       addUnique(state.brands, product.brand);
     });
     state.categories.sort(function(a, b){ return a.localeCompare(b); });
@@ -244,14 +309,14 @@
         const searchable = normalize([
           product.name,
           product.brand,
-          product.category,
+          getProductCategories(product).join(' '),
           product.description,
           product.availability,
           product.unit,
           product.color
         ].join(' '));
         const matchesSearch = !search || searchable.includes(search);
-        const matchesCategory = !category || normalize(product.category) === category;
+        const matchesCategory = !category || productHasCategory(product, category);
         const matchesBrand = !brand || normalize(product.brand) === brand;
         return matchesSearch && matchesCategory && matchesBrand;
       });
@@ -261,7 +326,7 @@
         return Number(a.product.currentPrice || a.product.price || 0) - Number(b.product.currentPrice || b.product.price || 0);
       }
       if(sort === 'category'){
-        return String(a.product.category || '').localeCompare(String(b.product.category || ''));
+        return formatCategories(a.product).localeCompare(formatCategories(b.product));
       }
       if(sort === 'name'){
         return String(a.product.name || '').localeCompare(String(b.product.name || ''));
@@ -300,7 +365,7 @@
 
       tr.appendChild(imageCell);
       tr.appendChild(makeEl('td', '', p.name || 'Sans nom'));
-      tr.appendChild(makeEl('td', '', p.category || '-'));
+      tr.appendChild(makeEl('td', 'category-cell', formatCategories(p)));
       tr.appendChild(makeEl('td', '', p.brand || '-'));
       tr.appendChild(makeEl('td', '', formatPrice(p)));
       tr.appendChild(makeEl('td', '', p.availability || '-'));
@@ -402,7 +467,7 @@
     });
 
     qs('#exportProducts').addEventListener('click', function(){
-      downloadCSV(state.products, 'produits-fodis.csv');
+      downloadJSON(state.products, 'products.json');
     });
 
     qs('#productsTable').addEventListener('click', function(e){
@@ -410,7 +475,7 @@
         const i = Number(e.target.dataset.idx);
         if(confirm('Supprimer ce produit ?')){
           state.products.splice(i, 1);
-          saveJSON(storageKeys.products, state.products);
+          saveProducts();
           refreshProductState();
         }
       }
@@ -436,8 +501,9 @@
       state.siteInfo.email = qs('#si_email').value.trim();
       state.siteInfo.address = qs('#si_address').value.trim();
       state.siteInfo.hours = qs('#si_hours').value.trim();
+      delete state.siteInfo.pw;
       saveJSON(storageKeys.siteInfo, state.siteInfo);
-      alert('Informations enregistrées localement. Utilisez Exporter pour obtenir le JSON final.');
+      persistSiteInfo();
     });
 
     qs('#exportSiteInfo').addEventListener('click', function(){
@@ -478,12 +544,24 @@
       const b = makeEl('button', 'secondary', 'Supprimer');
       b.type = 'button';
       b.addEventListener('click', function(){
+        const inUse = state.products.some(function(product){
+          return productHasCategory(product, category);
+        });
+        if(inUse && !confirm('Cette catégorie est utilisée par des produits. La retirer aussi de ces produits ?')){
+          return;
+        }
+        state.products.forEach(function(product){
+          product.category = getProductCategories(product).filter(function(productCategory){
+            return normalize(productCategory) !== normalize(category);
+          });
+          if(product.category.length === 0){
+            product.category = ['Autre'];
+          }
+          product.icon = getCategoryIcon(getPrimaryCategory(product));
+        });
         state.categories.splice(i, 1);
-        renderCategories();
-        populateFilters();
-        populateDatalists();
-        updateDashboard();
-        saveCollections();
+        saveProducts();
+        refreshProductState();
       });
       li.appendChild(b);
       ul.appendChild(li);
@@ -540,7 +618,7 @@
       id: '',
       name: '',
       brand: '',
-      category: '',
+      category: [],
       description: '',
       price: null,
       currentPrice: null,
@@ -557,7 +635,7 @@
 
   function fillProductForm(product){
     qs('#pf_name').value = product.name || '';
-    qs('#pf_category').value = product.category || '';
+    qs('#pf_category').value = getProductCategories(product).join(', ');
     qs('#pf_brand').value = product.brand || '';
     qs('#pf_price').value = product.price || '';
     qs('#pf_currentPrice').value = product.currentPrice || '';
@@ -581,7 +659,7 @@
         (state.products[state.editingIndex].id || createUniqueProductId(qs('#pf_name').value, state.editingIndex)),
       name: qs('#pf_name').value.trim(),
       brand: qs('#pf_brand').value.trim(),
-      category: qs('#pf_category').value.trim(),
+      category: parseCategories(qs('#pf_category').value),
       description: qs('#pf_description').value.trim(),
       price: toNullableNumber(qs('#pf_price').value),
       currentPrice: toNullableNumber(qs('#pf_currentPrice').value),
@@ -592,10 +670,10 @@
       color: qs('#pf_color').value.trim(),
       availability: qs('#pf_availability').value.trim() || 'Disponible',
       images: getImageList(state.selectedImages),
-      icon: getCategoryIcon(qs('#pf_category').value)
+      icon: getCategoryIcon(parseCategories(qs('#pf_category').value)[0])
     };
 
-    if(!product.name || !product.category){
+    if(!product.name || product.category.length === 0){
       alert('Le nom et la catégorie sont obligatoires.');
       return;
     }
@@ -606,9 +684,36 @@
       state.products[state.editingIndex] = product;
     }
 
-    saveJSON(storageKeys.products, state.products);
+    saveProducts();
     closeProductDialog();
     refreshProductState();
+  }
+
+  function saveProducts(){
+    saveJSON(storageKeys.products, state.products);
+    persistProducts();
+  }
+
+  function persistProducts(){
+    fetchFirstJSON(['save-products', 'admin_data.php?action=products'], {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(state.products)
+    }).catch(function(){});
+  }
+
+  function persistSiteInfo(){
+    fetchFirstJSON(['site-info', 'admin_data.php?action=site-info'], {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(state.siteInfo)
+    })
+      .then(function(){
+        alert('Informations enregistrées dans data/site_info.json.');
+      })
+      .catch(function(){
+        alert('Informations enregistrées localement. Utilisez Exporter si le serveur admin nest pas lancé.');
+      });
   }
 
   function downloadJSON(obj, filename){
@@ -759,20 +864,15 @@
 
     try{
       for(const file of files){
-        const response = await fetch('admin_assets.php?action=upload', {
+        const payload = {
+          filename: file.name,
+          data: await fileToDataURL(file)
+        };
+        const result = await fetchFirstJSON(['admin_assets.php?action=upload', 'upload-assets'], {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            filename: file.name,
-            data: await fileToDataURL(file)
-          })
+          body: JSON.stringify(payload)
         });
-
-        if(!response.ok){
-          throw new Error('Upload failed');
-        }
-
-        const result = await response.json();
         const path = result.path;
         if(!assetImages.includes(path)){
           assetImages.push(path);

@@ -1,8 +1,13 @@
 <?php
 declare(strict_types=1);
 
-require __DIR__ . DIRECTORY_SEPARATOR . 'admin_auth.php';
-fodis_require_admin_json();
+$authFile = __DIR__ . DIRECTORY_SEPARATOR . 'admin_auth.php';
+if (is_file($authFile)) {
+    require $authFile;
+    if (function_exists('fodis_require_admin_json')) {
+        fodis_require_admin_json();
+    }
+}
 
 header('Content-Type: application/json; charset=utf-8');
 

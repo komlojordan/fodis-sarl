@@ -1,0 +1,169 @@
+backend:
+  name: github
+  repo: komlojordan/fodis-sarl
+  branch: main
+
+local_backend: true
+
+media_folder: "assets"
+public_folder: "assets"
+
+collections:
+  - name: "catalogue"
+    label: "Produits"
+    files:
+      - name: "products"
+        label: "Base des produits"
+        file: "data/products.json"
+        format: "products_array"
+        editor:
+          preview: false
+        fields:
+          - name: "products"
+            label: "Produits"
+            label_singular: "Produit"
+            widget: "list"
+            summary: "{{fields.name}}"
+            fields:
+              - label: "Identifiant"
+                name: "id"
+                widget: "string"
+                hint: "Exemple : qnc-ciment-colle. Garder unique pour chaque produit."
+              - label: "Nom du produit"
+                name: "name"
+                widget: "string"
+              - label: "Marque"
+                name: "brand"
+                widget: "string"
+                required: false
+              - label: "Catégories"
+                name: "category"
+                widget: "select"
+                multiple: true
+                options:
+                  - "Quincaillerie"
+                  - "Electricite"
+                  - "Plomberie"
+                  - "Sanitaire"
+                  - "Appareillage"
+                  - "Autre"
+              - label: "Description"
+                name: "description"
+                widget: "text"
+                required: false
+              - label: "Prix normal"
+                name: "price"
+                widget: "number"
+                value_type: "int"
+                min: 0
+              - label: "Prix actuel / promotion"
+                name: "currentPrice"
+                widget: "number"
+                value_type: "int"
+                min: 0
+                required: false
+              - label: "Devise"
+                name: "currency"
+                widget: "select"
+                options:
+                  - "FCFA"
+                  - "EUR"
+                  - "USD"
+                default: "FCFA"
+              - label: "Unité"
+                name: "unit"
+                widget: "string"
+                required: false
+              - label: "Poids"
+                name: "weight"
+                widget: "string"
+                required: false
+              - label: "Dimensions"
+                name: "dimensions"
+                widget: "string"
+                required: false
+              - label: "Couleur"
+                name: "color"
+                widget: "string"
+                required: false
+              - label: "Disponibilité"
+                name: "availability"
+                widget: "select"
+                options:
+                  - "Disponible"
+                  - "Sur commande"
+                  - "Indisponible"
+                default: "Disponible"
+              - label: "Images"
+                name: "images"
+                widget: "list"
+                required: false
+                field:
+                  label: "Image"
+                  name: "image"
+                  widget: "image"
+              - label: "Icône de catégorie"
+                name: "icon"
+                widget: "select"
+                required: false
+                options:
+                  - label: "Quincaillerie"
+                    value: "data/icons/quincaillerie.svg"
+                  - label: "Electricite"
+                    value: "data/icons/electricite.svg"
+                  - label: "Plomberie"
+                    value: "data/icons/plomberie.svg"
+                  - label: "Sanitaire"
+                    value: "data/icons/sanitaire.svg"
+                  - label: "Appareillage"
+                    value: "data/icons/appareillage.svg"
+
+  - name: "site"
+    label: "Informations du site"
+    files:
+      - name: "site_info"
+        label: "Coordonnées et textes"
+        file: "data/site_info.json"
+        format: "json"
+        editor:
+          preview: false
+        fields:
+          - label: "Nom du site"
+            name: "name"
+            widget: "string"
+          - label: "Slogan"
+            name: "tagline"
+            widget: "string"
+            required: false
+          - label: "Téléphones"
+            name: "phones"
+            widget: "list"
+            required: false
+            field:
+              label: "Téléphone"
+              name: "phone"
+              widget: "string"
+          - label: "Numéro WhatsApp"
+            name: "whatsapp"
+            widget: "string"
+            required: false
+          - label: "Libellé WhatsApp"
+            name: "whatsapp_label"
+            widget: "string"
+            required: false
+          - label: "Message WhatsApp par défaut"
+            name: "whatsapp_message"
+            widget: "text"
+            required: false
+          - label: "Email"
+            name: "email"
+            widget: "string"
+            required: false
+          - label: "Adresse"
+            name: "address"
+            widget: "string"
+            required: false
+          - label: "Horaires"
+            name: "hours"
+            widget: "string"
+            required: false

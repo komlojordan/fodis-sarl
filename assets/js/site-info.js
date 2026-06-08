@@ -2,8 +2,28 @@
 (function(){
   function digitsOnly(s){ return s.replace(/[^0-9+]/g,'').replace(/^\+/, ''); }
 
-  fetch('site_info_public.php')
-    .then(r=>r.json())
+  function fetchFirstJSON(urls){
+    let index = 0;
+
+    function tryNext(){
+      const url = urls[index];
+      index += 1;
+
+      return fetch(url)
+        .then(r=>{
+          if(!r.ok) throw new Error('site info unavailable');
+          return r.json();
+        })
+        .catch(error=>{
+          if(index >= urls.length) throw error;
+          return tryNext();
+        });
+    }
+
+    return tryNext();
+  }
+
+  fetchFirstJSON(['site_info_public.php', 'site-info', 'data/site_info.json'])
     .then(data=>{
       if(!data) return;
       try{

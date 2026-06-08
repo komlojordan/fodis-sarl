@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Administration - Fodis Sarl</title>
+</head>
+<body>
+  <script>
+    window.CMS_MANUAL_INIT = true;
+  </script>
+  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <script>
+    function toPlainObject(value) {
+      return value && typeof value.toJS === 'function' ? value.toJS() : value;
+    }
+
+    window.CMS.registerCustomFormat('products_array', 'json', {
+      fromFile: function(text) {
+        const products = JSON.parse(text || '[]');
+        return {
+          products: Array.isArray(products) ? products : []
+        };
+      },
+      toFile: function(value) {
+        const data = toPlainObject(value) || {};
+        const products = Array.isArray(data.products) ? data.products : [];
+        return JSON.stringify(products, null, 2) + '\n';
+      }
+    });
+
+    window.CMS.init();
+  </script>
+</body>
+</html>

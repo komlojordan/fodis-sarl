@@ -346,6 +346,14 @@ h3{font-size:17px}
 #productsTable tbody tr:hover{background:#fbfdfc}
 #productsTable tbody tr:last-child td{border-bottom:0}
 
+#productsTable .category-cell{
+  max-width:220px;
+  color:var(--green-dark);
+  font-size:12px;
+  font-weight:bold;
+  line-height:1.45;
+}
+
 #productsTable img{
   width:62px;
   height:48px;

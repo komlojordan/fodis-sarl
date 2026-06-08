@@ -74,7 +74,7 @@
           <option value="category">Catégorie</option>
         </select>
         <button id="addProductBtn" type="button"><i class="fa-solid fa-plus"></i> Ajouter</button>
-        <button id="exportProducts" type="button" class="secondary"><i class="fa-solid fa-file-csv"></i> Exporter</button>
+        <button id="exportProducts" type="button" class="secondary"><i class="fa-solid fa-file-code"></i> Exporter JSON</button>
       </div>
 
       <div class="table-wrap">
@@ -96,7 +96,10 @@
 
       <div class="form-grid">
         <label>Nom<input id="pf_name" name="name" required></label>
-        <label>Catégorie<input id="pf_category" name="category" list="categoryOptions" required></label>
+        <label>
+          Catégories
+          <input id="pf_category" name="category" list="categoryOptions" required placeholder="Ex: Quincaillerie, Sanitaire">
+        </label>
         <label>Marque<input id="pf_brand" name="brand" list="brandOptions"></label>
         <label>Prix<input id="pf_price" name="price" type="number" min="0" step="1"></label>
         <label>Prix promo<input id="pf_currentPrice" name="currentPrice" type="number" min="0" step="1"></label>
