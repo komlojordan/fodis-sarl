@@ -1,10 +1,6 @@
 backend:
-  name: github
-  repo: komlojordan/fodis-sarl
+  name: git-gateway
   branch: main
-  auth_scope: repo
-  open_authoring: false
-  squash_merges: true
 
 local_backend: true
 
