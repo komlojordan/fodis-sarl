@@ -2,6 +2,8 @@ backend:
   name: github
   repo: komlojordan/fodis-sarl
   branch: main
+  base_url: https://api.netlify.com
+  site_id: fodis-sarl.netlify.app
 
 local_backend: true
 
