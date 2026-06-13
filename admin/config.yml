@@ -1,88 +1,130 @@
 backend:
   name: github
-  repo: YOUR_GITHUB_USER/YOUR_REPO
+  repo: komlojordan/fodis-sarl
   branch: main
-  auth_scope: repo
-  local_backend: true
 
-media_folder: "assets/uploads"
-public_folder: "/assets/uploads"
+media_folder: "assets"
+public_folder: "assets"
 
 collections:
-  - name: "site_info"
-    label: "Informations du site"
+  # 1. COLLECTION : PRODUITS
+  - name: "products_collection"
+    label: "Produits"
+    delete: false
+    editor:
+      preview: false
     files:
-      - file: "data/site_info.json"
-        label: "Informations du site"
-        name: "site_info"
+      - name: "products_list"
+        label: "Tous les Produits"
+        file: "products.json"
         fields:
-          - {label: "Nom", name: "name", widget: "string"}
+          - label: "Liste des produits"
+            name: "products"
+            widget: "list"
+            summary: "{{fields.name}} - {{fields.price}} FCFA"
+            fields:
+              - { label: "Identifiant Unique (ex: qnc-ciment)", name: "id", widget: "string" }
+              - { label: "Nom du produit", name: "name", widget: "string" }
+              
+              # Liaison dynamique avec la collection Marques (brands)
+              - label: "Marque"
+                name: "brand"
+                widget: "relation"
+                collection: "marques_collection"
+                file: "data"
+                search_fields: ["brands.*"]
+                value_field: "brands.*"
+                display_fields: ["brands.*"]
+              
+              # Liaison dynamique multiple avec la collection Catégories
+              - label: "Catégorie(s)"
+                name: "category"
+                widget: "relation"
+                collection: "categories_collection"
+                file: "data"
+                multiple: true
+                search_fields: ["categories.*"]
+                value_field: "categories.*"
+                display_fields: ["categories.*"]
+
+              - { label: "Description", name: "description", widget: "text" }
+              - { label: "Prix standard", name: "price", widget: "number", value_type: "int" }
+              - { label: "Prix promotionnel (Optionnel)", name: "currentPrice", widget: "number", value_type: "int", required: false }
+              - { label: "Devise", name: "currency", widget: "string", default: "FCFA" }
+              - { label: "Unité de vente", name: "unit", widget: "string" }
+              - { label: "Poids / Volume", name: "weight", widget: "string" }
+              - { label: "Dimensions", name: "dimensions", widget: "string" }
+              - { label: "Couleur", name: "color", widget: "string" }
+              
+              - label: "Disponibilité"
+                name: "availability"
+                widget: "select"
+                options: ["Disponible", "Sur commande", "Rupture de stock"]
+              
+              - label: "Images du produit"
+                name: "images"
+                widget: "list"
+                field: { label: "Image", name: "image", widget: "image" }
+                
+              - { label: "Chemin de l'icône SVG", name: "icon", widget: "string" }
+
+  # 2. COLLECTION : INFOS DU SITE
+  - name: "site_info_collection"
+    label: "Infos du Site"
+    delete: false
+    editor:
+      preview: false
+    files:
+      - name: "site_info"
+        label: "Configuration Générale"
+        file: "site_info.json"
+        fields:
+          - { label: "Nom de l'entreprise", name: "name", widget: "string" }
           - label: "Coordonnées"
             name: "coordonnees"
             widget: "object"
             fields:
-              - {label: "Adresse", name: "address", widget: "string"}
-              - {label: "Téléphone", name: "phone", widget: "string"}
-              - {label: "Email", name: "email", widget: "string"}
-          - label: "Réseaux sociaux"
+              - { label: "Adresse", name: "address", widget: "string" }
+              - { label: "Téléphone", name: "phone", widget: "string" }
+              - { label: "Email", name: "email", widget: "string" }
+          - label: "Réseaux Sociaux & Contact"
             name: "reseaux_sociaux"
             widget: "object"
             fields:
-              - {label: "Tagline", name: "tagline", widget: "string"}
-              - {label: "WhatsApp", name: "whatsapp", widget: "string"}
-              - {label: "Label WhatsApp", name: "whatsapp_label", widget: "string"}
-              - {label: "Message WhatsApp", name: "whatsapp_message", widget: "text"}
-              - {label: "Horaires", name: "hours", widget: "string"}
+              - { label: "Slogan / Tagline", name: "tagline", widget: "string" }
+              - { label: "Numéro WhatsApp", name: "whatsapp", widget: "string" }
+              - { label: "Texte du bouton WhatsApp", name: "whatsapp_label", widget: "string" }
+              - { label: "Message WhatsApp pré-rempli", name: "whatsapp_message", widget: "text" }
+              - { label: "Heures d'ouverture", name: "hours", widget: "string" }
 
-  - name: "catalogues"
-    label: "Catalogues"
+  # 3. COLLECTION : MARQUES (Anciennement "brands" dans data.json)
+  - name: "marques_collection"
+    label: "Marques"
+    delete: false
+    editor:
+      preview: false
     files:
-      - file: "data/data.json"
-        label: "Marques et catégories"
-        name: "catalogues"
+      - name: "data"
+        label: "Liste des Marques"
+        file: "data.json"
         fields:
-          - label: "Catégories"
-            name: "categories"
-            widget: "list"
-            field:
-              {label: "Catégorie", name: "category", widget: "string"}
-          - label: "Marques"
+          - label: "Marques disponibles"
             name: "brands"
             widget: "list"
-            field:
-              {label: "Marque", name: "brand", widget: "string"}
+            field: { label: "Nom de la marque", name: "brand", widget: "string" }
 
-  - name: "products"
-    label: "Produits"
+  # 4. COLLECTION : CATÉGORIES
+  - name: "categories_collection"
+    label: "Catégories"
+    delete: false
+    editor:
+      preview: false
     files:
-      - file: "data/products.json"
-        label: "Produits"
-        name: "products"
+      - name: "data"
+        label: "Liste des Catégories"
+        file: "data.json"
         fields:
-          - label: "Produits"
-            name: "products"
+          - label: "Catégories disponibles"
+            name: "categories"
             widget: "list"
-            fields:
-              - {label: "ID", name: "id", widget: "string"}
-              - {label: "Nom", name: "name", widget: "string"}
-              - {label: "Marque", name: "brand", widget: "string"}
-              - label: "Catégories"
-                name: "category"
-                widget: "list"
-                field:
-                  {label: "Catégorie", name: "category", widget: "string"}
-              - {label: "Description", name: "description", widget: "text"}
-              - {label: "Prix", name: "price", widget: "number"}
-              - {label: "Prix promo", name: "currentPrice", widget: "number", required: false}
-              - {label: "Devise", name: "currency", widget: "string"}
-              - {label: "Unité", name: "unit", widget: "string"}
-              - {label: "Poids", name: "weight", widget: "string"}
-              - {label: "Dimensions", name: "dimensions", widget: "string"}
-              - {label: "Couleur", name: "color", widget: "string"}
-              - {label: "Disponibilité", name: "availability", widget: "string"}
-              - label: "Images"
-                name: "images"
-                widget: "list"
-                field:
-                  {label: "Image", name: "image", widget: "image"}
-              - {label: "Icône", name: "icon", widget: "string", required: false}
+            field: { label: "Nom de la catégorie", name: "category", widget: "string" }
