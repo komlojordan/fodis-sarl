@@ -1,7 +1,6 @@
 backend:
-  name: github
-  repo: komlojordan/fodis-sarl
-  branch: main
+  name: git-gateway
+  branch: main 
 
 media_folder: "assets"
 public_folder: "assets"
