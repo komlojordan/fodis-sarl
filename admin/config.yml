@@ -7,18 +7,17 @@ media_folder: "assets"
 public_folder: "assets"
 
 collections:
-  # 1. CATALOGUE EN MODE TABLEAU NATIVE (Un fichier JSON par produit)
+  # 1. CATALOGUE EN MODE TABLEAU (Un fichier JSON par produit)
   - name: "products_collection"
     label: "Produits"
-    folder: "data/produits"    # <--- Cible précisément votre nouveau dossier "produits"
-    create: true              # Active le GROS BOUTON GENERAL "Ajouter un produit" en haut à droite
-    delete: true              # Active le bouton "Supprimer" (Poubelle) sur chaque ligne du tableau
+    folder: "data/produits"    #
+    create: true              # Active le gros bouton général "Ajouter"
+    delete: true              # Active le bouton "Supprimer"
     extension: "json"
     format: "json"
-    slug: "{{id}}"            # Force le nom du fichier à être l'id (ex: elec-cable-25.json)
+    slug: "{{fields.id}}"      # Utilise le champ id interne pour nommer le fichier (ex: elec-cable-25.json)
     
-    # Configuration des colonnes du tableau de bord principal
-    summary_fields: ["images[0]", "name", "price", "availability"]
+    # Configuration simplifiée pour éviter le crash de l'affichage
     summary: "{{name}} | {{price}} {{currency}} | {{availability}}"
     
     fields:
@@ -61,33 +60,32 @@ collections:
       - label: "Images du produit"
         name: "images"
         widget: "list"
-        # Sans propriété "name" ici pour préserver la structure exacte de votre tableau ["assets/i3.png"]
         field: { label: "Image", widget: "image" }
         
       - { label: "Chemin de l'icône SVG", name: "icon", widget: "string" }
 
-  # 2. MANAGEMENT DES MARQUES (Toujours centralisé dans data.json)
+  # 2. MANAGEMENT DES MARQUES (data.json)
   - name: "marques_collection"
     label: "Marques"
     delete: false
     files:
       - name: "data"
         label: "Liste des Marques"
-        file: "data/data.json"
+        file: "data/data.json" #
         fields:
           - label: "Marques disponibles"
             name: "brands"
             widget: "list"
             field: { label: "Nom de la marque", widget: "string" }
 
-  # 3. MANAGEMENT DES CATÉGORIES (Toujours centralisé dans data.json)
+  # 3. MANAGEMENT DES CATÉGORIES (data.json)
   - name: "categories_collection"
     label: "Catégories"
     delete: false
     files:
       - name: "data"
         label: "Liste des Catégories"
-        file: "data/data.json"
+        file: "data/data.json" #
         fields:
           - label: "Catégories disponibles"
             name: "categories"
@@ -101,7 +99,7 @@ collections:
     files:
       - name: "site_info"
         label: "Configuration Générale"
-        file: "data/site_info.json"
+        file: "data/site_info.json" #
         fields:
           - { label: "Nom de l'entreprise", name: "name", widget: "string" }
           - label: "Coordonnées"
