@@ -1,12 +1,13 @@
 backend:
   name: git-gateway
-  branch: main 
+  branch: main
 
+# Configuration des dossiers médias (images) basée sur votre arborescence
 media_folder: "assets"
 public_folder: "assets"
 
 collections:
-  # 1. COLLECTION : PRODUITS
+  # 1. COLLECTION : PRODUITS (Cible le fichier unique dans data/products.json)
   - name: "products_collection"
     label: "Produits"
     delete: false
@@ -15,17 +16,17 @@ collections:
     files:
       - name: "products_list"
         label: "Tous les Produits"
-        file: "products.json"
+        file: "data/products.json" # <--- Chemin corrigé
         fields:
-          - label: "Liste des produits"
+          - label: "Vos Produits"
             name: "products"
             widget: "list"
-            summary: "{{fields.name}} - {{fields.price}} FCFA"
+            summary: "{{fields.name}} - {{fields.price}} {{fields.currency}}"
             fields:
-              - { label: "Identifiant Unique (ex: qnc-ciment)", name: "id", widget: "string" }
+              - { label: "Identifiant Unique (ex: qnc-ciment-colle)", name: "id", widget: "string" }
               - { label: "Nom du produit", name: "name", widget: "string" }
               
-              # Liaison dynamique avec la collection Marques (brands)
+              # Liaison avec les marques
               - label: "Marque"
                 name: "brand"
                 widget: "relation"
@@ -35,7 +36,7 @@ collections:
                 value_field: "brands.*"
                 display_fields: ["brands.*"]
               
-              # Liaison dynamique multiple avec la collection Catégories
+              # Liaison avec les catégories
               - label: "Catégorie(s)"
                 name: "category"
                 widget: "relation"
@@ -67,7 +68,7 @@ collections:
                 
               - { label: "Chemin de l'icône SVG", name: "icon", widget: "string" }
 
-  # 2. COLLECTION : INFOS DU SITE
+  # 2. COLLECTION : INFOS DU SITE (Cible data/site_info.json)
   - name: "site_info_collection"
     label: "Infos du Site"
     delete: false
@@ -76,7 +77,7 @@ collections:
     files:
       - name: "site_info"
         label: "Configuration Générale"
-        file: "site_info.json"
+        file: "data/site_info.json" # <--- Chemin corrigé
         fields:
           - { label: "Nom de l'entreprise", name: "name", widget: "string" }
           - label: "Coordonnées"
@@ -96,7 +97,7 @@ collections:
               - { label: "Message WhatsApp pré-rempli", name: "whatsapp_message", widget: "text" }
               - { label: "Heures d'ouverture", name: "hours", widget: "string" }
 
-  # 3. COLLECTION : MARQUES (Anciennement "brands" dans data.json)
+  # 3. COLLECTION : MARQUES (Cible data/data.json)
   - name: "marques_collection"
     label: "Marques"
     delete: false
@@ -105,14 +106,14 @@ collections:
     files:
       - name: "data"
         label: "Liste des Marques"
-        file: "data.json"
+        file: "data/data.json" # <--- Chemin corrigé
         fields:
           - label: "Marques disponibles"
             name: "brands"
             widget: "list"
             field: { label: "Nom de la marque", name: "brand", widget: "string" }
 
-  # 4. COLLECTION : CATÉGORIES
+  # 4. COLLECTION : CATÉGORIES (Cible data/data.json)
   - name: "categories_collection"
     label: "Catégories"
     delete: false
@@ -121,7 +122,7 @@ collections:
     files:
       - name: "data"
         label: "Liste des Catégories"
-        file: "data.json"
+        file: "data/data.json" # <--- Chemin corrigé
         fields:
           - label: "Catégories disponibles"
             name: "categories"
