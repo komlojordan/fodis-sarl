@@ -60,7 +60,7 @@ collections:
       - label: "Images du produit"
         name: "images"
         widget: "list"
-        field: { label: "Image", widget: "image" }
+        field: { label: "Image", name: "image", widget: "image" }
         
       - { label: "Chemin de l'icône SVG", name: "icon", widget: "string" }
 
@@ -76,7 +76,7 @@ collections:
           - label: "Marques disponibles"
             name: "brands"
             widget: "list"
-            field: { label: "Nom de la marque", widget: "string" }
+            field: { label: "Nom de la marque", name: "brand", widget: "string" }
 
   # 3. MANAGEMENT DES CATÉGORIES (data.json)
   - name: "categories_collection"
@@ -90,7 +90,7 @@ collections:
           - label: "Catégories disponibles"
             name: "categories"
             widget: "list"
-            field: { label: "Nom de la catégorie", widget: "string" }
+            field: { label: "Nom de la catégorie", name: "category", widget: "string" }
 
   # 4. CONFIGURATION GÉNÉRALE DU SITE (site_info.json)
   - name: "site_info_collection"
