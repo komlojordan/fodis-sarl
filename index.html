@@ -3259,7 +3259,8 @@
     })
     .then(function(data){
 
-        products = data.map(normalizeProduct);
+        var productList = Array.isArray(data) ? data : (Array.isArray(data.products) ? data.products : []);
+        products = productList.map(normalizeProduct);
         updateActiveCategory();
         renderHomeGroups();
         renderProducts();

@@ -104,9 +104,10 @@
       .then(function(r){ return r.json(); })
       .then(function(products){
         const savedProducts = getSavedJSON(storageKeys.products, null);
+        const productList = Array.isArray(products) ? products : (Array.isArray(products.products) ? products.products : []);
         state.categories = getSavedJSON(storageKeys.categories, []);
         state.brands = getSavedJSON(storageKeys.brands, []);
-        state.products = validateProducts(savedProducts || products || []);
+        state.products = validateProducts(savedProducts || productList || []);
         refreshProductState();
       })
       .catch(function(){

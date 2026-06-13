@@ -27,39 +27,55 @@
     .then(data=>{
       if(!data) return;
       try{
-        document.title = data.name || document.title;
+        const name = data.name || (data.coordonnees && data.coordonnees.name) || 'FODIS SARL';
+        document.title = name || document.title;
         const nameEl = document.getElementById('siteName');
-        if(nameEl) nameEl.textContent = data.name;
+        if(nameEl) nameEl.textContent = name;
+
+        const tagline = data.tagline || (data.reseaux_sociaux && data.reseaux_sociaux.tagline);
         const tagEl = document.getElementById('siteTagline');
-        if(tagEl && data.tagline) tagEl.textContent = data.tagline;
+        if(tagEl && tagline) tagEl.textContent = tagline;
 
         const logoImg = document.querySelector('.brand-logo img');
-        if(logoImg) logoImg.alt = data.name;
+        if(logoImg) logoImg.alt = name;
+
+        let phones = [];
+        if (data.phones && data.phones.length) {
+          phones = data.phones;
+        } else if (data.coordonnees && data.coordonnees.phone) {
+          phones = [data.coordonnees.phone];
+        } else if (data.phone) {
+          phones = [data.phone];
+        }
 
         const phoneEl = document.getElementById('headerPhone');
         const phoneAction = document.getElementById('phoneAction');
-        if(phoneEl && data.phones && data.phones.length){
-          phoneEl.textContent = data.phones[0];
-          if(phoneAction) phoneAction.href = 'tel:' + data.phones[0].replace(/\s+/g,'');
+        if(phoneEl && phones.length){
+          phoneEl.textContent = phones[0];
+          if(phoneAction) phoneAction.href = 'tel:' + phones[0].replace(/\s+/g,'');
         }
+
+        const whatsapp = data.whatsapp || (data.reseaux_sociaux && data.reseaux_sociaux.whatsapp);
+        const whatsapp_message = data.whatsapp_message || (data.reseaux_sociaux && data.reseaux_sociaux.whatsapp_message);
+        const whatsapp_label = data.whatsapp_label || (data.reseaux_sociaux && data.reseaux_sociaux.whatsapp_label);
 
         const wa = document.getElementById('whatsappAction');
         const waLabel = document.getElementById('whatsappLabel');
-        if(wa && data.whatsapp){
-          const num = digitsOnly(data.whatsapp);
-          const defaultMessage = data.whatsapp_message || ('Bonjour ' + (data.name||'') + ', je souhaite avoir plus d\'informations sur vos produits.');
+        if(wa && whatsapp){
+          const num = digitsOnly(whatsapp);
+          const defaultMessage = whatsapp_message || ('Bonjour ' + (name||'') + ', je souhaite avoir plus d\'informations sur vos produits.');
           wa.href = 'https://wa.me/' + num + '?text=' + encodeURIComponent(defaultMessage);
-          wa.setAttribute('data-whatsapp-number', data.whatsapp);
-          if(waLabel) waLabel.textContent = data.whatsapp_label || 'WhatsApp';
+          wa.setAttribute('data-whatsapp-number', whatsapp);
+          if(waLabel) waLabel.textContent = whatsapp_label || 'WhatsApp';
         }
 
         const searchInput = document.getElementById('searchInput');
-        if(searchInput) searchInput.placeholder = 'Rechercher chez ' + (data.name || 'notre boutique');
+        if(searchInput) searchInput.placeholder = 'Rechercher chez ' + (name || 'notre boutique');
 
         // update any elements that had data-whatsapp-message template
         document.querySelectorAll('[data-whatsapp-message]').forEach(el=>{
           const msg = el.getAttribute('data-whatsapp-message') || '';
-          el.setAttribute('data-whatsapp-message', msg.replace(/FODIS SARL/g, data.name || '')); 
+          el.setAttribute('data-whatsapp-message', msg.replace(/FODIS SARL/g, name || '')); 
         });
       }catch(e){ console.error('site-info error', e); }
     })

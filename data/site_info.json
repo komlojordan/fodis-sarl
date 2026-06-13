@@ -1,11 +1,15 @@
 {
   "name": "FODIS SARL",
-  "tagline": "Quincaillerie au Cameroun",
-  "phones": [
-    "+237694370529"
-  ],
-  "whatsapp": "+237694370529",
-  "email": "contact@fodis.example",
-  "address": "Douala, Cameroun",
-  "hours": "Lun-Ven 8:00 - 18:00, Sam 8:00 - 13:00"
+  "coordonnees": {
+    "address": "Douala, Cameroun",
+    "phone": "+237694370529",
+    "email": "fodis-sarl3@gmail.com"
+  },
+  "reseaux_sociaux": {
+    "tagline": "Quincaillerie au Cameroun",
+    "whatsapp": "+237694370529",
+    "whatsapp_label": "WhatsApp",
+    "whatsapp_message": "Bonjour FODIS SARL, je souhaite avoir plus d'informations sur vos produits.",
+    "hours": "Lun-Ven 8:00 - 18:00, Sam 8:00 - 13:00"
+  }
 }
