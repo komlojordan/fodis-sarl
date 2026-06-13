@@ -1,0 +1,21 @@
+{
+  "id": "san-lavabo",
+  "name": "Lavabo mural",
+  "brand": "Fodis Sanitaire",
+  "category": [
+    "Sanitaire"
+  ],
+  "description": "Lavabo blanc mural pour salle de bain, boutique ou bureau.",
+  "price": 28000,
+  "currentPrice": null,
+  "currency": "FCFA",
+  "unit": "piece",
+  "weight": "9 kg",
+  "dimensions": "45 x 35 x 18 cm",
+  "color": "Blanc",
+  "availability": "Sur commande",
+  "images": [
+    "assets/i7.png"
+  ],
+  "icon": "data/icons/sanitaire.svg"
+}

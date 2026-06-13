@@ -1,0 +1,22 @@
+{
+  "id": "plb-robinet-lavabo",
+  "name": "Robinet lavabo",
+  "brand": "Fodis Sanitaire",
+  "category": [
+    "Plomberie",
+    "Sanitaire"
+  ],
+  "description": "Robinet simple et resistant pour lavabo ou point d'eau.",
+  "price": 8500,
+  "currentPrice": 7900,
+  "currency": "FCFA",
+  "unit": "piece",
+  "weight": "650 g",
+  "dimensions": "15 x 12 x 6 cm",
+  "color": "Chrome",
+  "availability": "Disponible",
+  "images": [
+    "assets/i6.png"
+  ],
+  "icon": "data/icons/plomberie.svg"
+}

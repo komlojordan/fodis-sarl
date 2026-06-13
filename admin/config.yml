@@ -2,82 +2,106 @@ backend:
   name: git-gateway
   branch: main
 
-# Configuration des dossiers médias (images) basée sur votre arborescence
+# Dossier où le CMS enregistre les images téléversées
 media_folder: "assets"
 public_folder: "assets"
 
 collections:
-  # 1. COLLECTION : PRODUITS (Cible le fichier unique dans data/products.json)
+  # 1. CATALOGUE EN MODE TABLEAU NATIVE (Un fichier JSON par produit)
   - name: "products_collection"
     label: "Produits"
+    folder: "data/produits"    # <--- Cible précisément votre nouveau dossier "produits"
+    create: true              # Active le GROS BOUTON GENERAL "Ajouter un produit" en haut à droite
+    delete: true              # Active le bouton "Supprimer" (Poubelle) sur chaque ligne du tableau
+    extension: "json"
+    format: "json"
+    slug: "{{id}}"            # Force le nom du fichier à être l'id (ex: elec-cable-25.json)
+    
+    # Configuration des colonnes du tableau de bord principal
+    summary_fields: ["images[0]", "name", "price", "availability"]
+    summary: "{{name}} | {{price}} {{currency}} | {{availability}}"
+    
+    fields:
+      - { label: "Identifiant Unique (ex: elec-cable-25)", name: "id", widget: "string" }
+      - { label: "Nom du produit", name: "name", widget: "string" }
+      
+      - label: "Marque"
+        name: "brand"
+        widget: "relation"
+        collection: "marques_collection"
+        file: "data"
+        search_fields: ["brands.*"]
+        value_field: "brands.*"
+        display_fields: ["brands.*"]
+      
+      - label: "Catégorie(s)"
+        name: "category"
+        widget: "relation"
+        collection: "categories_collection"
+        file: "data"
+        multiple: true
+        search_fields: ["categories.*"]
+        value_field: "categories.*"
+        display_fields: ["categories.*"]
+
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Prix standard", name: "price", widget: "number", value_type: "int" }
+      - { label: "Prix promotionnel (Optionnel)", name: "currentPrice", widget: "number", value_type: "int", required: false }
+      - { label: "Devise", name: "currency", widget: "string", default: "FCFA" }
+      - { label: "Unité de vente", name: "unit", widget: "string" }
+      - { label: "Poids / Volume", name: "weight", widget: "string" }
+      - { label: "Dimensions", name: "dimensions", widget: "string" }
+      - { label: "Couleur", name: "color", widget: "string" }
+      
+      - label: "Disponibilité"
+        name: "availability"
+        widget: "select"
+        options: ["Disponible", "Sur commande", "Rupture de stock"]
+      
+      - label: "Images du produit"
+        name: "images"
+        widget: "list"
+        # Sans propriété "name" ici pour préserver la structure exacte de votre tableau ["assets/i3.png"]
+        field: { label: "Image", widget: "image" }
+        
+      - { label: "Chemin de l'icône SVG", name: "icon", widget: "string" }
+
+  # 2. MANAGEMENT DES MARQUES (Toujours centralisé dans data.json)
+  - name: "marques_collection"
+    label: "Marques"
     delete: false
-    editor:
-      preview: false
     files:
-      - name: "products_list"
-        label: "Tous les Produits"
-        file: "data/products.json" # <--- Chemin corrigé
+      - name: "data"
+        label: "Liste des Marques"
+        file: "data/data.json"
         fields:
-          - label: "Vos Produits"
-            name: "products"
+          - label: "Marques disponibles"
+            name: "brands"
             widget: "list"
-            summary: "{{fields.name}} - {{fields.price}} {{fields.currency}}"
-            fields:
-              - { label: "Identifiant Unique (ex: qnc-ciment-colle)", name: "id", widget: "string" }
-              - { label: "Nom du produit", name: "name", widget: "string" }
-              
-              # Liaison avec les marques
-              - label: "Marque"
-                name: "brand"
-                widget: "relation"
-                collection: "marques_collection"
-                file: "data"
-                search_fields: ["brands.*"]
-                value_field: "brands.*"
-                display_fields: ["brands.*"]
-              
-              # Liaison avec les catégories
-              - label: "Catégorie(s)"
-                name: "category"
-                widget: "relation"
-                collection: "categories_collection"
-                file: "data"
-                multiple: true
-                search_fields: ["categories.*"]
-                value_field: "categories.*"
-                display_fields: ["categories.*"]
+            field: { label: "Nom de la marque", widget: "string" }
 
-              - { label: "Description", name: "description", widget: "text" }
-              - { label: "Prix standard", name: "price", widget: "number", value_type: "int" }
-              - { label: "Prix promotionnel (Optionnel)", name: "currentPrice", widget: "number", value_type: "int", required: false }
-              - { label: "Devise", name: "currency", widget: "string", default: "FCFA" }
-              - { label: "Unité de vente", name: "unit", widget: "string" }
-              - { label: "Poids / Volume", name: "weight", widget: "string" }
-              - { label: "Dimensions", name: "dimensions", widget: "string" }
-              - { label: "Couleur", name: "color", widget: "string" }
-              
-              - label: "Disponibilité"
-                name: "availability"
-                widget: "select"
-                options: ["Disponible", "Sur commande", "Rupture de stock"]
-              
-              - label: "Images du produit"
-                name: "images"
-                widget: "list"
-                field: { label: "Image", name: "image", widget: "image" }
-                
-              - { label: "Chemin de l'icône SVG", name: "icon", widget: "string" }
+  # 3. MANAGEMENT DES CATÉGORIES (Toujours centralisé dans data.json)
+  - name: "categories_collection"
+    label: "Catégories"
+    delete: false
+    files:
+      - name: "data"
+        label: "Liste des Catégories"
+        file: "data/data.json"
+        fields:
+          - label: "Catégories disponibles"
+            name: "categories"
+            widget: "list"
+            field: { label: "Nom de la catégorie", widget: "string" }
 
-  # 2. COLLECTION : INFOS DU SITE (Cible data/site_info.json)
+  # 4. CONFIGURATION GÉNÉRALE DU SITE (site_info.json)
   - name: "site_info_collection"
     label: "Infos du Site"
     delete: false
-    editor:
-      preview: false
     files:
       - name: "site_info"
         label: "Configuration Générale"
-        file: "data/site_info.json" # <--- Chemin corrigé
+        file: "data/site_info.json"
         fields:
           - { label: "Nom de l'entreprise", name: "name", widget: "string" }
           - label: "Coordonnées"
@@ -96,35 +120,3 @@ collections:
               - { label: "Texte du bouton WhatsApp", name: "whatsapp_label", widget: "string" }
               - { label: "Message WhatsApp pré-rempli", name: "whatsapp_message", widget: "text" }
               - { label: "Heures d'ouverture", name: "hours", widget: "string" }
-
-  # 3. COLLECTION : MARQUES (Cible data/data.json)
-  - name: "marques_collection"
-    label: "Marques"
-    delete: false
-    editor:
-      preview: false
-    files:
-      - name: "data"
-        label: "Liste des Marques"
-        file: "data/data.json" # <--- Chemin corrigé
-        fields:
-          - label: "Marques disponibles"
-            name: "brands"
-            widget: "list"
-            field: { label: "Nom de la marque", name: "brand", widget: "string" }
-
-  # 4. COLLECTION : CATÉGORIES (Cible data/data.json)
-  - name: "categories_collection"
-    label: "Catégories"
-    delete: false
-    editor:
-      preview: false
-    files:
-      - name: "data"
-        label: "Liste des Catégories"
-        file: "data/data.json" # <--- Chemin corrigé
-        fields:
-          - label: "Catégories disponibles"
-            name: "categories"
-            widget: "list"
-            field: { label: "Nom de la catégorie", name: "category", widget: "string" }

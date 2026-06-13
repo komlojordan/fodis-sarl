@@ -1,0 +1,21 @@
+{
+  "id": "qnc-brouette-chantier",
+  "name": "Brouette de chantier",
+  "brand": "Fodis Pro",
+  "category": [
+    "Quincaillerie"
+  ],
+  "description": "Brouette robuste pour transport de sable, gravier et materiaux.",
+  "price": 42000,
+  "currentPrice": null,
+  "currency": "FCFA",
+  "unit": "piece",
+  "weight": "12 kg",
+  "dimensions": "90 x 60 x 55 cm",
+  "color": "Vert",
+  "availability": "Disponible",
+  "images": [
+    "assets/i2.png"
+  ],
+  "icon": "data/icons/quincaillerie.svg"
+}
