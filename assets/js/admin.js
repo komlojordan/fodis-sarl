@@ -8,6 +8,9 @@
     assets: 'fodis_admin_assets'
   };
 
+  // When true, products are read-only and always loaded from data/products.json
+  const READ_ONLY_PRODUCTS = true;
+
   const state = {
     products: [],
     categories: [],
@@ -103,11 +106,11 @@
     fetch('data/products.json')
       .then(function(r){ return r.json(); })
       .then(function(products){
-        const savedProducts = getSavedJSON(storageKeys.products, null);
         const productList = Array.isArray(products) ? products : (Array.isArray(products.products) ? products.products : []);
         state.categories = getSavedJSON(storageKeys.categories, []);
         state.brands = getSavedJSON(storageKeys.brands, []);
-        state.products = validateProducts(savedProducts || productList || []);
+        // Always use the canonical products.json as the source of truth for products
+        state.products = validateProducts(productList || []);
         refreshProductState();
       })
       .catch(function(){
@@ -372,14 +375,18 @@
       tr.appendChild(makeEl('td', '', p.availability || '-'));
 
       const actions = document.createElement('td');
-      const edit = makeEl('button', 'edit', 'Modifier');
-      const del = makeEl('button', 'delete secondary', 'Supprimer');
-      edit.type = 'button';
-      del.type = 'button';
-      edit.dataset.idx = item.index;
-      del.dataset.idx = item.index;
-      actions.appendChild(edit);
-      actions.appendChild(del);
+      if(!READ_ONLY_PRODUCTS){
+        const edit = makeEl('button', 'edit', 'Modifier');
+        const del = makeEl('button', 'delete secondary', 'Supprimer');
+        edit.type = 'button';
+        del.type = 'button';
+        edit.dataset.idx = item.index;
+        del.dataset.idx = item.index;
+        actions.appendChild(edit);
+        actions.appendChild(del);
+      }else{
+        actions.textContent = 'Lecture seule';
+      }
       tr.appendChild(actions);
       tbody.appendChild(tr);
     });
@@ -455,7 +462,15 @@
     qs('#filterCategory').addEventListener('change', renderProducts);
     qs('#filterBrand').addEventListener('change', renderProducts);
     qs('#sortSelect').addEventListener('change', renderProducts);
-    qs('#addProductBtn').addEventListener('click', function(){ openProductDialog(); });
+    const addBtn = qs('#addProductBtn');
+    if(addBtn){
+      if(READ_ONLY_PRODUCTS){
+        addBtn.disabled = true;
+        addBtn.textContent = 'Lecture seule';
+      }else{
+        addBtn.addEventListener('click', function(){ openProductDialog(); });
+      }
+    }
 
     qs('#addCategory').addEventListener('click', addCategoryFromInput);
     qs('#newCategory').addEventListener('keydown', function(event){
@@ -472,6 +487,7 @@
     });
 
     qs('#productsTable').addEventListener('click', function(e){
+      if(READ_ONLY_PRODUCTS) return; // prevent edits/deletes in read-only mode
       if(e.target.classList.contains('delete')){
         const i = Number(e.target.dataset.idx);
         if(confirm('Supprimer ce produit ?')){
@@ -691,7 +707,12 @@
   }
 
   function saveProducts(){
+    // In read-only mode we still keep a local snapshot but do not persist to server
     saveJSON(storageKeys.products, state.products);
+    if(READ_ONLY_PRODUCTS){
+      console.warn('READ_ONLY_PRODUCTS: modifications are not persisted to server.');
+      return;
+    }
     persistProducts();
   }
 
