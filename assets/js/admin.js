@@ -1,8 +1,10 @@
 // Admin UI: client-side management for products, categories, brands, and site_info.
 (function(){
+  console.log('[admin] assets/js/admin.js loaded');
   const storageKeys = {
     products: 'fodis_admin_products',
     siteInfo: 'fodis_admin_site_info',
+    collections: 'fodis_admin_collections',
     categories: 'fodis_admin_categories',
     brands: 'fodis_admin_brands',
     assets: 'fodis_admin_assets'
@@ -62,11 +64,12 @@
 
   function fetchFirstJSON(urls, options){
     let index = 0;
+    const requestOptions = Object.assign({}, options, { cache: 'no-store' });
 
     function tryNext(){
       const url = urls[index];
       index += 1;
-      return fetch(url, options)
+      return fetch(url, requestOptions)
         .then(function(response){
           if(!response.ok){
             throw new Error('Requete indisponible.');
@@ -100,33 +103,78 @@
       });
   }
 
+  function mergeCollections(existing, incoming){
+    const merged = Array.isArray(existing) ? existing.slice() : [];
+    (Array.isArray(incoming) ? incoming : []).forEach(function(item){
+      addUnique(merged, item);
+    });
+    return merged.sort(function(a, b){ return a.localeCompare(b); });
+  }
+
   function loadInitial(){
+    console.log('[admin] loadInitial start');
     loadAssetsFromServer();
 
-    fetch('data/products.json')
+    const savedCollections = getSavedJSON(storageKeys.collections, null);
+    const savedSiteInfo = getSavedJSON(storageKeys.siteInfo, null);
+    const savedProducts = getSavedJSON(storageKeys.products, null);
+
+    console.log('[admin] savedCollections', savedCollections);
+    state.categories = Array.isArray(savedCollections && savedCollections.categories) ? savedCollections.categories : [];
+    state.brands = Array.isArray(savedCollections && savedCollections.brands) ? savedCollections.brands : [];
+    state.siteInfo = savedSiteInfo || {};
+
+    fetchFirstJSON(['admin_data.php?action=collections', 'data/data.json?ts=' + Date.now()])
+      .then(function(collections){
+        console.log('[admin] collections loaded from server', collections);
+        if(collections){
+          state.categories = mergeCollections(state.categories, collections.categories);
+          state.brands = mergeCollections(state.brands, collections.brands);
+        }
+        saveJSON(storageKeys.collections, { categories: state.categories, brands: state.brands });
+        renderCategories();
+        renderBrands();
+        populateFilters();
+        populateDatalists();
+        updateDashboard();
+      })
+      .catch(function(){
+        saveJSON(storageKeys.collections, { categories: state.categories, brands: state.brands });
+        renderCategories();
+        renderBrands();
+        populateFilters();
+        populateDatalists();
+        updateDashboard();
+      });
+
+    if(Array.isArray(savedProducts) && savedProducts.length){
+      console.log('[admin] loaded products from localStorage, count', savedProducts.length);
+      state.products = validateProducts(savedProducts);
+      refreshProductState();
+      return;
+    }
+
+    fetch('data/products.json?ts=' + Date.now(), { cache: 'no-store' })
       .then(function(r){ return r.json(); })
       .then(function(products){
         const productList = Array.isArray(products) ? products : (Array.isArray(products.products) ? products.products : []);
-        state.categories = getSavedJSON(storageKeys.categories, []);
-        state.brands = getSavedJSON(storageKeys.brands, []);
-        // Always use the canonical products.json as the source of truth for products
         state.products = validateProducts(productList || []);
         refreshProductState();
       })
       .catch(function(){
-        state.categories = getSavedJSON(storageKeys.categories, []);
-        state.brands = getSavedJSON(storageKeys.brands, []);
         state.products = validateProducts(getSavedJSON(storageKeys.products, []));
         refreshProductState();
       });
 
-    fetchFirstJSON(['site-info', 'admin_data.php?action=site-info', 'data/site_info.json', 'admin_site_info.php'])
+    fetchFirstJSON(['admin_data.php?action=site-info', 'data/site_info.json?ts=' + Date.now()])
       .then(function(siteInfo){
-        state.siteInfo = getSavedJSON(storageKeys.siteInfo, siteInfo || {});
+        state.siteInfo = Object.assign({}, savedSiteInfo || {}, siteInfo || {});
+        saveJSON(storageKeys.siteInfo, state.siteInfo);
         populateSiteInfo();
       })
       .catch(function(){
-        state.siteInfo = getSavedJSON(storageKeys.siteInfo, {});
+        state.siteInfo = savedSiteInfo || {};
+        saveJSON(storageKeys.siteInfo, state.siteInfo);
         populateSiteInfo();
       });
   }
@@ -284,8 +332,35 @@
   }
 
   function saveCollections(){
-    saveJSON(storageKeys.categories, state.categories);
-    saveJSON(storageKeys.brands, state.brands);
+    saveJSON(storageKeys.collections, { categories: state.categories, brands: state.brands });
+    if(!READ_ONLY_PRODUCTS){
+      persistCollections();
+    }
+  }
+
+  function persistCollections(){
+    console.log('[admin] persistCollections attempt');
+    fetch('admin_data.php?action=collections', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ categories: state.categories, brands: state.brands })
+    })
+    .then(function(response){
+      if(!response.ok){
+        throw new Error('Réponse non OK');
+      }
+      return response.json();
+    })
+    .then(function(res){
+      if(res && res.error){
+        console.warn('Sauvegarde locale des collections conservée.', res.error);
+      } else {
+        console.log('[admin] persistCollections success');
+      }
+    })
+    .catch(function(error){
+      console.warn('[admin] persistCollections failed, keeping local data', error.message);
+    });
   }
 
   function loadSavedAssets(){
@@ -717,24 +792,34 @@
   }
 
   function persistProducts(){
-    fetchFirstJSON(['save-products', 'admin_data.php?action=products'], {
+    fetchFirstJSON(['admin_data.php?action=products'], {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(state.products)
-    }).catch(function(){});
+    })
+    .then(function(res){
+      if(res && res.error) {
+        console.warn('Sauvegarde locale des produits conservée.', res.error);
+      }
+    })
+    .catch(function(){
+      console.warn('Le backend PHP n’est pas disponible. Les produits sont conservés localement.');
+    });
   }
 
   function persistSiteInfo(){
-    fetchFirstJSON(['site-info', 'admin_data.php?action=site-info'], {
+    fetchFirstJSON(['admin_data.php?action=site-info'], {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(state.siteInfo)
     })
-      .then(function(){
-        alert('Informations enregistrées dans data/site_info.json.');
+      .then(function(res){
+        if(res && res.error) {
+          console.warn('Sauvegarde locale des infos conservée.', res.error);
+        }
       })
       .catch(function(){
-        alert('Informations enregistrées localement. Utilisez Exporter si le serveur admin nest pas lancé.');
+        console.warn('Le backend PHP n’est pas disponible. Les informations du site sont conservées localement.');
       });
   }
 
