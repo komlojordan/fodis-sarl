@@ -9,7 +9,7 @@
   };
 
   // When true, products are read-only and always loaded from data/products.json
-  const READ_ONLY_PRODUCTS = true;
+  const READ_ONLY_PRODUCTS = false;
 
   const state = {
     products: [],
